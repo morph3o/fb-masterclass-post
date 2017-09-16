@@ -59,6 +59,7 @@ export default class HomeScreen extends React.Component {
                 }
               }}
               onLogoutFinished={() => {
+                storage.remove({ key: 'user' });
                 this.props.navigator.popToTop();
               }} />
 
