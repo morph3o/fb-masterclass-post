@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { TouchableOpacity, View, Image, Text, StyleSheet } from 'react-native';
-import { LoginButton, AccessToken } from 'react-native-fbsdk';
+import { LoginButton, AccessToken, GraphRequest, GraphRequestManager } from 'react-native-fbsdk';
 import storage from '../Model/PosterificStorage';
 
 export default class HomeScreen extends React.Component {
@@ -31,6 +31,16 @@ export default class HomeScreen extends React.Component {
                       } else {
                         console.log('got access token: ' + data.accessToken);
                         console.log('permissions: ' + data.permissions);
+                        let graphPath = '/me?fields=id,first_name,picture{url}';
+                        let requestHandler = (error, result) => {
+                          if(!error) {
+                            console.log(result.id + ', ' +
+                                        result.first_name + ', ' +
+                                        result.picture.data.url);
+                          }
+                        };
+                        let userInfoRequest = new GraphRequest(graphPath, null, requestHandler);
+                        new GraphRequestManager().addRequest(userInfoRequest).start();
                       }
                     }
                   );
@@ -52,7 +62,7 @@ export default class HomeScreen extends React.Component {
             }
           }
         >
-          <View style={{ flexDirection: 'row', justifyContent: 'center', width: 180, height: 28, backgroundColor: '#4167ae', borderRadius: 3, margin: 20 }}>        
+          <View style={{ flexDirection: 'row', justifyContent: 'center', width: 180, height: 28, backgroundColor: '#4167ae', borderRadius: 3, margin: 20 }}>
             <Text style={{ margin: 3, color: 'white', fontWeight: 'bold' }}>Get Started</Text>
           </View>
         </TouchableOpacity>
