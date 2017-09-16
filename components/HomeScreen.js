@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { TouchableOpacity, View, Image, Text, StyleSheet } from 'react-native';
 import { LoginButton, AccessToken, GraphRequest, GraphRequestManager } from 'react-native-fbsdk';
+import UserModel from '../Model/UserModel';
 import storage from '../Model/PosterificStorage';
 
 export default class HomeScreen extends React.Component {
@@ -24,6 +25,7 @@ export default class HomeScreen extends React.Component {
                 } else if(result.isCancelled) {
                   alert('Login was cancelled');
                 } else {
+                  let tmpThis = this;
                   AccessToken.getCurrentAccessToken().then(
                     (data) => {
                       if(data == null) {
@@ -37,6 +39,16 @@ export default class HomeScreen extends React.Component {
                             console.log(result.id + ', ' +
                                         result.first_name + ', ' +
                                         result.picture.data.url);
+                            let user = new UserModel(result.id, result.first_name, result.picture.data.url);
+                            storage.save({
+                              key: 'user',
+                              rawData: {
+                                user
+                              }
+                            });
+                            tmpThis.props.navigator.push({
+                              name: 'PosterList'
+                            });
                           }
                         };
                         let userInfoRequest = new GraphRequest(graphPath, null, requestHandler);
@@ -44,9 +56,6 @@ export default class HomeScreen extends React.Component {
                       }
                     }
                   );
-                  this.props.navigator.push({
-                    name: 'PosterList'
-                  });
                 }
               }}
               onLogoutFinished={() => {
